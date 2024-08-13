@@ -6,4 +6,5 @@ export default defineConfig({
   plugins: [react({
     tsDecorators: true,
   })],
+  base: '/Upixel/'
 })

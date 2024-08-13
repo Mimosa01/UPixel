@@ -2,12 +2,13 @@
   "name": "upixel",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://mimosa01.github.io/Upixel/",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --post 8080"
   },
   "dependencies": {
     "@pixi/react": "^7.1.2",
