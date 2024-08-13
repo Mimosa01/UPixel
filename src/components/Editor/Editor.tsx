@@ -109,7 +109,7 @@ export const Editor: FC<PropsEditor> = memo((props) => {
       <Stage 
         width={sceneSize.width} 
         height={sceneSize.height}
-        options={{backgroundColor: 0x000000}}
+        options={{backgroundColor: 0xe5e5e5}}
       >
         <Container 
           pivot={cellSize * props.grid / 2}
