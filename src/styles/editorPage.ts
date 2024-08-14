@@ -8,5 +8,5 @@ export const EditorPageStyled = styled.div`
 `
 
 export const EditorStyled = styled.div`
-  height: 85vh;
+  height: 90vh;
 `

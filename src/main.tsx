@@ -5,12 +5,10 @@ import './index.css'
 import { Provider } from 'mobx-react'
 import colorStore from './store/colorStore.ts'
 import coloringStore from './store/coloringStore.ts'
-import editorEventsStore from './store/editorEventsStore.ts'
 
 const store = {
   colorStore,
   coloringStore,
-  editorEventsStore
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

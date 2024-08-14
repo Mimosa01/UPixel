@@ -9,9 +9,7 @@ import { HandleColoringType, HandleFillingType } from "../../types/handlersTypes
 import coloringStore from "../../store/coloringStore";
 import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
 import { gridCoordinates } from "../../utils/grid";
-import * as PIXI from 'pixi.js';
-import editorEventsStore from "../../store/editorEventsStore";
-import { observer } from "mobx-react";
+import Viewport from "./Viewport";
 
 type Sizes = {
   width: number;
@@ -68,7 +66,7 @@ type PropsEditor = {
   isColoring?: boolean;
 }
 
-export const Editor: FC<PropsEditor> = observer((props) => {
+export const Editor: FC<PropsEditor> = (props) => {
   const editorRef = useRef<HTMLDivElement>(null!);
 
   const [sceneSize, setSceneSize] = useState<Sizes>({width: 0, height: 0});
@@ -95,30 +93,29 @@ export const Editor: FC<PropsEditor> = observer((props) => {
         height={sceneSize.height}
         options={{backgroundColor: 0xe5e5e5}}
       >
-        <Container 
-          pivot={cellSize * props.grid / 2}
-          position={[sceneSize.width / 2, sceneSize.height / 2]}
-          scale={editorEventsStore.scale}
-          onwheel={(event: PIXI.FederatedWheelEvent) => editorEventsStore.scaleWheel(event)}
-          ontouchstart={(event: PIXI.FederatedPointerEvent) => editorEventsStore.scaleStartMobile(event)}
-          ontouchend={() => editorEventsStore.scaleEndMobile()}
-        >
-          {gridCoordinates(props.grid, cellSize).map((item, index) => (
-            <Rect 
-              key={index}
-              index={index}
-              x={item.x}
-              y={item.y}
-              cellSize={cellSize}
-              isFilling={props.rects && getFilling(index, [...props.rects])}
-              fill={props.rects && getColorRect(index, [...props.rects])}
-              indexColor={(props.rects && props.isColoring) ? getColorIndex(index, [...props.rects]) : undefined}
-              handleFilling={!props.isColoring ? handleClickFilling : undefined}
-              handleColoring={props.isColoring ? handleColoring : undefined}
-            />
-          ))}
-        </Container>
+        <Viewport>
+          <Container 
+            interactive={true}
+            pivot={cellSize * props.grid / 2}
+            position={[sceneSize.width / 2, sceneSize.height / 2]}
+          >
+            {gridCoordinates(props.grid, cellSize).map((item, index) => (
+              <Rect 
+                key={index}
+                index={index}
+                x={item.x}
+                y={item.y}
+                cellSize={cellSize}
+                isFilling={props.rects && getFilling(index, [...props.rects])}
+                fill={props.rects && getColorRect(index, [...props.rects])}
+                indexColor={(props.rects && props.isColoring) ? getColorIndex(index, [...props.rects]) : undefined}
+                handleFilling={!props.isColoring ? handleClickFilling : undefined}
+                handleColoring={props.isColoring ? handleColoring : undefined}
+              />
+            ))}
+          </Container>
+        </Viewport>
       </Stage>
     </EditorStyled>
   )
-})
+}
