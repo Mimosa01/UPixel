@@ -10,6 +10,7 @@ import coloringStore from "../../store/coloringStore";
 import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
 import { gridCoordinates } from "../../utils/grid";
 import * as PIXI from 'pixi.js';
+import editorEventsStore from "../../store/editorEventsStore";
 
 type Sizes = {
   width: number;

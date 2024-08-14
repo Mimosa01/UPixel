@@ -1,14 +1,13 @@
 import styled from "styled-components";
 
 export const PalleteStyled = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   display: flex;
   align-items: center;
   padding: 15px;
-  height: 15vh;
   background-color: #fff;
   border: 1px solid #b3b0b0;
   box-shadow: 0px -3px 0px 0px rgba(179, 176, 176, 0.5);

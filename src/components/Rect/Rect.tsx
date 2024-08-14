@@ -52,7 +52,7 @@ export const Rect: FC<PropsRect> = memo((props) => {
   const draw = useCallback((g: PIXI.Graphics) => {
     g.clear();
     g.beginFill(fill);
-    g.lineStyle(1, '#b3b0b0');
+    g.lineStyle(1, '#e5e5e5', 0.5);
     g.drawRect(props.x, props.y, props.cellSize, props.cellSize);
     g.endFill();
   }, [props, fill]);
