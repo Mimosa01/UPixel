@@ -1,6 +1,6 @@
 import { Container, Stage } from "@pixi/react"
 import { EditorStyled } from "../../styles/editorPage"
-import { FC, memo, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from "react-responsive";
 import { Rect } from "../Rect/Rect";
 import colorStore from "../../store/colorStore";
@@ -11,6 +11,7 @@ import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProp
 import { gridCoordinates } from "../../utils/grid";
 import * as PIXI from 'pixi.js';
 import editorEventsStore from "../../store/editorEventsStore";
+import { observer } from "mobx-react";
 
 type Sizes = {
   width: number;
@@ -61,31 +62,17 @@ const handleColoring = ({
   }
 }
 
-const onScale = (
-  event: PIXI.FederatedWheelEvent, 
-  scale: number,
-  setScale: React.Dispatch<React.SetStateAction<number>>
-) => {
-
-  if (event.deltaY > 0 && scale < 5) {
-    setScale(prev => prev += 0.05);
-  } else if (event.deltaY < 0 && scale > 1){
-    setScale(prev => prev -= 0.05);
-  }
-}
-
 type PropsEditor = {
   grid: number;
   rects?: ColorForColoringType[];
   isColoring?: boolean;
 }
 
-export const Editor: FC<PropsEditor> = memo((props) => {
+export const Editor: FC<PropsEditor> = observer((props) => {
   const editorRef = useRef<HTMLDivElement>(null!);
 
   const [sceneSize, setSceneSize] = useState<Sizes>({width: 0, height: 0});
   const [cellSize, setCellSize] = useState<number>(0);
-  const [scale, setScale] = useState<number>(1);
 
   const isLandscape = useMediaQuery({query: '(orientation: landscape)'});
 
@@ -101,10 +88,6 @@ export const Editor: FC<PropsEditor> = memo((props) => {
     setCellSize((editorRef.current.clientWidth / props.grid < 50) ? editorRef.current.clientWidth / props.grid : 50)
   }, [props.grid]);
 
-  const coordinates = useMemo(() => {
-    return gridCoordinates(props.grid, cellSize);
-  }, [cellSize, props.grid]);
-
   return (
     <EditorStyled ref={editorRef}>
       <Stage 
@@ -115,10 +98,12 @@ export const Editor: FC<PropsEditor> = memo((props) => {
         <Container 
           pivot={cellSize * props.grid / 2}
           position={[sceneSize.width / 2, sceneSize.height / 2]}
-          scale={scale}
-          onwheel={(event: PIXI.FederatedWheelEvent) => onScale(event, scale, setScale)}
+          scale={editorEventsStore.scale}
+          onwheel={(event: PIXI.FederatedWheelEvent) => editorEventsStore.scaleWheel(event)}
+          ontouchstart={(event: PIXI.FederatedPointerEvent) => editorEventsStore.scaleStartMobile(event)}
+          ontouchend={() => editorEventsStore.scaleEndMobile()}
         >
-          {coordinates.map((item, index) => (
+          {gridCoordinates(props.grid, cellSize).map((item, index) => (
             <Rect 
               key={index}
               index={index}
