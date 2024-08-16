@@ -7,6 +7,10 @@ export const EditorPageStyled = styled.div`
   flex-direction: column;
 `
 
+// interface PropsEditorStyled {
+//   $palleteHeight: number;
+// }
+
 export const EditorStyled = styled.div`
-  height: 90vh;
+  height: 87vh;
 `

@@ -46,8 +46,7 @@ export const PalleteColorButton = styled.button<PropsPalleteColor>`
   color: #fff;
   background-color: ${props => props.$color ? props.$color : '#fff'};
   border: 1px solid #b3b0b0;
-  border-radius: 10px;
-  box-shadow: 2px 2px 0px 0px rgba(179, 176, 176, 0.5);
+  border-radius: 50%;
   cursor: pointer;
   ${props => {
     if (props.$color) {

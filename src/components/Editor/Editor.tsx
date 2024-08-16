@@ -9,7 +9,9 @@ import { HandleColoringType, HandleFillingType } from "../../types/handlersTypes
 import coloringStore from "../../store/coloringStore";
 import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
 import { gridCoordinates } from "../../utils/grid";
-import Viewport from "./Viewport";
+import { MAX_CELLSIZE } from "../../consts";
+import { observer } from "mobx-react";
+import editorEventsStore from "../../store/editorEventsStore";
 
 type Sizes = {
   width: number;
@@ -60,13 +62,18 @@ const handleColoring = ({
   }
 }
 
+document.addEventListener('touchstart', (event) => editorEventsStore.onTouchStart(event))
+document.addEventListener('touchmove', (event) => editorEventsStore.onTouchMove(event))
+document.addEventListener('touchend', () => editorEventsStore.onTouchEnd())
+document.addEventListener('wheel', (event) => editorEventsStore.wheelScale(event))
+
 type PropsEditor = {
   grid: number;
   rects?: ColorForColoringType[];
   isColoring?: boolean;
 }
 
-export const Editor: FC<PropsEditor> = (props) => {
+export const Editor: FC<PropsEditor> = observer((props) => {
   const editorRef = useRef<HTMLDivElement>(null!);
 
   const [sceneSize, setSceneSize] = useState<Sizes>({width: 0, height: 0});
@@ -82,22 +89,28 @@ export const Editor: FC<PropsEditor> = (props) => {
   }, [isLandscape]);
 
   useEffect(() => {
-    // Надо будет константу сделать 
-    setCellSize((editorRef.current.clientWidth / props.grid < 50) ? editorRef.current.clientWidth / props.grid : 50)
-  }, [props.grid]);
+    const widthOrHeight = editorRef.current.clientWidth < editorRef.current.clientHeight ? 
+      editorRef.current.clientWidth : 
+      editorRef.current.clientHeight;
+
+    setCellSize((widthOrHeight / props.grid < MAX_CELLSIZE) ? widthOrHeight / props.grid : MAX_CELLSIZE)
+    editorEventsStore.maxScale = MAX_CELLSIZE / cellSize;
+  }, [props.grid, cellSize]);
 
   return (
-    <EditorStyled ref={editorRef}>
+    <EditorStyled 
+      ref={editorRef}
+    >
       <Stage 
         width={sceneSize.width} 
         height={sceneSize.height}
         options={{backgroundColor: 0xe5e5e5}}
       >
-        <Viewport>
-          <Container 
+        <Container 
             interactive={true}
             pivot={cellSize * props.grid / 2}
             position={[sceneSize.width / 2, sceneSize.height / 2]}
+            scale={editorEventsStore.scale}
           >
             {gridCoordinates(props.grid, cellSize).map((item, index) => (
               <Rect 
@@ -114,8 +127,7 @@ export const Editor: FC<PropsEditor> = (props) => {
               />
             ))}
           </Container>
-        </Viewport>
       </Stage>
     </EditorStyled>
   )
-}
+})
