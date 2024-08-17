@@ -64,7 +64,7 @@ const handleColoring = ({
 
 document.addEventListener('touchstart', (event) => editorEventsStore.onTouchStart(event))
 document.addEventListener('touchmove', (event) => editorEventsStore.onTouchMove(event))
-document.addEventListener('touchend', () => editorEventsStore.onTouchEnd())
+document.addEventListener('touchend', (event) => editorEventsStore.onTouchEnd(event))
 document.addEventListener('wheel', (event) => editorEventsStore.wheelScale(event))
 
 type PropsEditor = {
@@ -86,6 +86,7 @@ export const Editor: FC<PropsEditor> = observer((props) => {
       width: editorRef.current.clientWidth,
       height: editorRef.current.clientHeight
     });
+
   }, [isLandscape]);
 
   useEffect(() => {
@@ -93,9 +94,21 @@ export const Editor: FC<PropsEditor> = observer((props) => {
       editorRef.current.clientWidth : 
       editorRef.current.clientHeight;
 
-    setCellSize((widthOrHeight / props.grid < MAX_CELLSIZE) ? widthOrHeight / props.grid : MAX_CELLSIZE)
-    editorEventsStore.maxScale = MAX_CELLSIZE / cellSize;
+    setCellSize((widthOrHeight / props.grid < MAX_CELLSIZE) ? widthOrHeight / props.grid : MAX_CELLSIZE);
   }, [props.grid, cellSize]);
+
+  useEffect(() => {
+    editorEventsStore.setPosition({x: editorRef.current.clientWidth / 2, y: editorRef.current.clientHeight / 2})
+    editorEventsStore.maxScale = MAX_CELLSIZE / cellSize;
+    editorEventsStore.sceneSize = {
+      width: sceneSize.width,
+      height: sceneSize.height
+    };
+    editorEventsStore.containerSize = {
+      width: cellSize * props.grid,
+      height: cellSize * props.grid
+    }
+  }, [cellSize, sceneSize, props.grid]);
 
   return (
     <EditorStyled 
@@ -109,7 +122,9 @@ export const Editor: FC<PropsEditor> = observer((props) => {
         <Container 
             interactive={true}
             pivot={cellSize * props.grid / 2}
-            position={[sceneSize.width / 2, sceneSize.height / 2]}
+            // [editorEventsStore.position.x, editorEventsStore.position.y]
+            // [sceneSize.width / 2, sceneSize.height / 2]
+            position={[editorEventsStore.position.x, editorEventsStore.position.y]}
             scale={editorEventsStore.scale}
           >
             {gridCoordinates(props.grid, cellSize).map((item, index) => (
