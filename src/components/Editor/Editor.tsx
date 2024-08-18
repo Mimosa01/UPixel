@@ -108,7 +108,12 @@ export const Editor: FC<PropsEditor> = observer((props) => {
       width: cellSize * props.grid,
       height: cellSize * props.grid
     }
+
   }, [cellSize, sceneSize, props.grid]);
+
+  useEffect(() => {
+    editorEventsStore.normalizeContainerPosition();
+  }, [editorEventsStore.scale])
 
   return (
     <EditorStyled 
@@ -122,8 +127,6 @@ export const Editor: FC<PropsEditor> = observer((props) => {
         <Container 
             interactive={true}
             pivot={cellSize * props.grid / 2}
-            // [editorEventsStore.position.x, editorEventsStore.position.y]
-            // [sceneSize.width / 2, sceneSize.height / 2]
             position={[editorEventsStore.position.x, editorEventsStore.position.y]}
             scale={editorEventsStore.scale}
           >
