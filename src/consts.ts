@@ -1,1 +1,1 @@
-export const MAX_CELLSIZE = 30;
+export const MAX_CELLSIZE = 45;

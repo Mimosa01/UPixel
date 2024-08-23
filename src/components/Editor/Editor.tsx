@@ -64,7 +64,7 @@ const handleColoring = ({
 
 document.addEventListener('touchstart', (event) => editorEventsStore.onTouchStart(event))
 document.addEventListener('touchmove', (event) => editorEventsStore.onTouchMove(event))
-document.addEventListener('touchend', (event) => editorEventsStore.onTouchEnd(event))
+document.addEventListener('touchend', () => editorEventsStore.onTouchEnd())
 document.addEventListener('wheel', (event) => editorEventsStore.wheelScale(event))
 
 type PropsEditor = {
@@ -104,16 +104,9 @@ export const Editor: FC<PropsEditor> = observer((props) => {
       width: sceneSize.width,
       height: sceneSize.height
     };
-    editorEventsStore.containerSize = {
-      width: cellSize * props.grid,
-      height: cellSize * props.grid
-    }
+    editorEventsStore.containerSize = cellSize * props.grid;
 
   }, [cellSize, sceneSize, props.grid]);
-
-  useEffect(() => {
-    editorEventsStore.normalizeContainerPosition();
-  }, [editorEventsStore.scale])
 
   return (
     <EditorStyled 

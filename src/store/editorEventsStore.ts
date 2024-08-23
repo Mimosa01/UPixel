@@ -17,7 +17,7 @@ class EditorEventsStore {
   // настраиваемые параметры
   maxScale: number = 1;
   sceneSize: Size = {width: 0, height: 0};
-  containerSize: Size = {width: 0, height: 0};
+  containerSize: number = 0;
 
   // вспомогательные параметры
   private _isScale: boolean = false;
@@ -31,47 +31,65 @@ class EditorEventsStore {
     this.position = point;
   }
 
-  @action normalizeContainerPosition(): void {
-    const positionDeltaY = (this.containerSize.height * this.scale - this.sceneSize.height) / 2;
-    const positionDeltaX = (this.containerSize.width * this.scale - this.sceneSize.width) / 2;
-    const centerScreenX = this.sceneSize.width / 2;
-    const centerScreenY = this.sceneSize.height / 2;
+  // || this.scale <= 1
+
+  private normalizeContainerPosition(): void {
+    const minTreshold: Point = {x: 0, y: 0};
+    const maxTreshold: Point = {x: this.sceneSize.width, y: this.sceneSize.height};
+
+    const delta = this.containerSize * this.scale / 2;
+
+    // possible
+    const leftBorder = Math.round(this.position.x - delta);
+    const rightBorder = Math.round(this.position.x + delta);
+    const topBorder = Math.round(this.position.y - delta);
+    const bottomBorder = Math.round(this.position.y + delta);
 
     let newPosX: number = this.position.x;
     let newPosY: number = this.position.y;
 
-    if ((this.containerSize.height * this.scale) < this.sceneSize.height) {
-      newPosY = this.sceneSize.height / 2;
-    }
+    if (this.containerSize * this.scale > this.sceneSize.width) {
+      if (leftBorder > minTreshold.x) {
+        newPosX -= leftBorder;
+      }
 
-    if ((this.containerSize.width * this.scale) < this.sceneSize.width) {
+      if (rightBorder < maxTreshold.x) {
+        newPosX += (maxTreshold.x - rightBorder);
+      } 
+    } else {
       newPosX = this.sceneSize.width / 2;
     }
 
-    if (positionDeltaX > 0) {
-      if (this.position.x < (centerScreenX - positionDeltaX)) {
-        newPosX = this.position.x + (centerScreenX - this.position.x) - positionDeltaX;
+    if (this.containerSize * this.scale > this.sceneSize.height) {
+      if (topBorder > minTreshold.y) {
+        newPosY -= topBorder;
       }
-  
-      if (this.position.x > (centerScreenX + positionDeltaX)) {
-        newPosX = this.position.x + (centerScreenX - this.position.x) + positionDeltaX;
-      }
+
+      if (bottomBorder < maxTreshold.y) {
+        newPosY += (maxTreshold.y - bottomBorder);
+      } 
+    } else {
+      newPosY = this.sceneSize.height / 2
     }
 
-    if (positionDeltaY > 0) {
-      if (this.position.y < (centerScreenY - positionDeltaY)) {
-        newPosY = this.position.y + (centerScreenY - this.position.y) - positionDeltaY;
-      }
-  
-      if (this.position.y > (centerScreenY + positionDeltaY)) {
-        newPosY = this.position.y + (centerScreenY - this.position.y) + positionDeltaY;
-      }
-    }
+    this.setPosition({
+      x: newPosX,
+      y: newPosY
+    })
+  }
 
-      this.setPosition({
-        x: newPosX,
-        y: newPosY
-      })
+  private offsetScale(scale: number, nexScale: number, point: Point): void {
+    const zoomSize = (this.containerSize * nexScale - this.containerSize * scale) / 2;
+    const deltaCenterX = (point.x - this.position.x) * 100 / (this.containerSize * scale / 2);
+    const deltaCenterY =  (point.y - this.position.y) * 100 / (this.containerSize * scale / 2);
+
+    const offsetX = zoomSize * deltaCenterX / 100;
+    const offsetY = zoomSize * deltaCenterY / 100;
+
+    this.setPosition({
+      x: this.position.x - offsetX,
+      y: this.position.y - offsetY
+    })
   }
 
   @action wheelScale(event: WheelEvent): void {
@@ -85,12 +103,12 @@ class EditorEventsStore {
       scaleDelta = scaleStep
     }
 
-    this.setPosition({
-      x: (this.scale + scaleDelta) / this.scale * (this.position.x - event.clientX) + event.clientX, 
-      y: (this.scale + scaleDelta) / this.scale * (this.position.y - event.clientY) + event.clientY,
-    })
+    const nextScale: number = this.scale + scaleDelta;
+
+    this.offsetScale(this.scale, nextScale, {x: event.clientX, y: event.clientY});
     
-    this.scale += scaleDelta;
+    this.scale = Number(nextScale.toFixed(2));
+    this.normalizeContainerPosition();
   }
 
   @action onTouchStart(event: TouchEvent): void {
@@ -129,19 +147,18 @@ class EditorEventsStore {
         return;
       }
 
-      this.setPosition({
-        x: (this.scale / this._initialDiffFingers * currentDiffFingers) / this.scale * (this.position.x - centerTouches.x) + centerTouches.x, 
-        y: (this.scale / this._initialDiffFingers * currentDiffFingers) / this.scale * (this.position.y - centerTouches.y) + centerTouches.y,
-      })
+      const nextScale = this.scale + scaleDelta;
 
-      this.scale += scaleDelta;
+      this.offsetScale(this.scale, nextScale, {x: centerTouches.x, y: centerTouches.y});
+
+      this.scale = nextScale;
       this._initialDiffFingers = currentDiffFingers;
     }
   }
 
-  @action onTouchEnd(event: TouchEvent): void {
-    console.log(event)
+  @action onTouchEnd(): void {
     this._isScale = false;
+    this.normalizeContainerPosition();
   }
 }
 
