@@ -11,7 +11,8 @@ import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProp
 import { gridCoordinates } from "../../utils/grid";
 import { MAX_CELLSIZE } from "../../consts";
 import { observer } from "mobx-react";
-import editorEventsStore from "../../store/editorEventsStore";
+import editorSettingsStore from "../../store/editor/editorSettingsStore";
+import scaleStore from "../../store/editor/scaleStore";
 
 type Sizes = {
   width: number;
@@ -62,10 +63,10 @@ const handleColoring = ({
   }
 }
 
-document.addEventListener('touchstart', (event) => editorEventsStore.onTouchStart(event))
-document.addEventListener('touchmove', (event) => editorEventsStore.onTouchMove(event))
-document.addEventListener('touchend', () => editorEventsStore.onTouchEnd())
-document.addEventListener('wheel', (event) => editorEventsStore.wheelScale(event))
+document.addEventListener('touchstart', (event) => scaleStore.onTouchStart(event))
+document.addEventListener('touchmove', (event) => scaleStore.onTouchMove(event))
+document.addEventListener('touchend', () => scaleStore.onTouchEnd())
+document.addEventListener('wheel', (event) => scaleStore.wheelScale(event))
 
 type PropsEditor = {
   grid: number;
@@ -98,13 +99,14 @@ export const Editor: FC<PropsEditor> = observer((props) => {
   }, [props.grid, cellSize]);
 
   useEffect(() => {
-    editorEventsStore.setPosition({x: editorRef.current.clientWidth / 2, y: editorRef.current.clientHeight / 2})
-    editorEventsStore.maxScale = MAX_CELLSIZE / cellSize;
-    editorEventsStore.sceneSize = {
+    editorSettingsStore.sceneSize = {
       width: sceneSize.width,
       height: sceneSize.height
-    };
-    editorEventsStore.containerSize = cellSize * props.grid;
+    }
+
+    editorSettingsStore.maxScale = MAX_CELLSIZE / cellSize;
+    editorSettingsStore.setPosition({x: editorRef.current.clientWidth / 2, y: editorRef.current.clientHeight / 2});
+    editorSettingsStore.containerSize = cellSize * props.grid;
 
   }, [cellSize, sceneSize, props.grid]);
 
@@ -120,8 +122,8 @@ export const Editor: FC<PropsEditor> = observer((props) => {
         <Container 
             interactive={true}
             pivot={cellSize * props.grid / 2}
-            position={[editorEventsStore.position.x, editorEventsStore.position.y]}
-            scale={editorEventsStore.scale}
+            position={[editorSettingsStore.position.x, editorSettingsStore.position.y]}
+            scale={editorSettingsStore.scale}
           >
             {gridCoordinates(props.grid, cellSize).map((item, index) => (
               <Rect 
