@@ -20,4 +20,8 @@ export const PalleteStyled = styled.div`
     list-style: none;
     overflow-x: auto;
   }
+
+  @media (orientation: landscape) {
+    padding: 5px;
+  }
 `

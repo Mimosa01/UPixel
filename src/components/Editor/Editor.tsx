@@ -1,6 +1,6 @@
 import { Container, Stage } from "@pixi/react"
 import { EditorStyled } from "../../styles/editorPage"
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect } from "react"
 import { useMediaQuery } from "react-responsive";
 import { Rect } from "../Rect/Rect";
 import colorStore from "../../store/colorStore";
@@ -8,16 +8,10 @@ import { ColorForColoringType } from "../../types/coloringType";
 import { HandleColoringType, HandleFillingType } from "../../types/handlersTypes";
 import coloringStore from "../../store/coloringStore";
 import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
-import { gridCoordinates } from "../../utils/grid";
-import { MAX_CELLSIZE } from "../../consts";
 import { observer } from "mobx-react";
 import editorSettingsStore from "../../store/editor/editorSettingsStore";
 import scaleStore from "../../store/editor/scaleStore";
-
-type Sizes = {
-  width: number;
-  height: number;
-}
+import movingStore from "../../store/editor/movingStore";
 
 const handleClickFilling = ({
   setFill, 
@@ -63,10 +57,14 @@ const handleColoring = ({
   }
 }
 
-document.addEventListener('touchstart', (event) => scaleStore.onTouchStart(event))
-document.addEventListener('touchmove', (event) => scaleStore.onTouchMove(event))
-document.addEventListener('touchend', () => scaleStore.onTouchEnd())
-document.addEventListener('wheel', (event) => scaleStore.wheelScale(event))
+document.addEventListener('touchstart', (event) => scaleStore.onTouchStart(event));
+document.addEventListener('touchmove', (event) => scaleStore.onTouchMove(event));
+document.addEventListener('touchend', () => scaleStore.onTouchEnd());
+document.addEventListener('wheel', (event) => scaleStore.wheelScale(event));
+
+document.addEventListener('touchstart', (event) => movingStore.onMoveTouchStart(event));
+document.addEventListener('touchmove', (event) => movingStore.onMoveTouch(event));
+document.addEventListener('touchend', () => movingStore.onMoveTouchEnd());
 
 type PropsEditor = {
   grid: number;
@@ -75,63 +73,33 @@ type PropsEditor = {
 }
 
 export const Editor: FC<PropsEditor> = observer((props) => {
-  const editorRef = useRef<HTMLDivElement>(null!);
-
-  const [sceneSize, setSceneSize] = useState<Sizes>({width: 0, height: 0});
-  const [cellSize, setCellSize] = useState<number>(0);
-
   const isLandscape = useMediaQuery({query: '(orientation: landscape)'});
 
   useEffect(() => {
-    setSceneSize({
-      width: editorRef.current.clientWidth,
-      height: editorRef.current.clientHeight
-    });
+    editorSettingsStore.startSettings(props.grid);
 
   }, [isLandscape]);
 
-  useEffect(() => {
-    const widthOrHeight = editorRef.current.clientWidth < editorRef.current.clientHeight ? 
-      editorRef.current.clientWidth : 
-      editorRef.current.clientHeight;
-
-    setCellSize((widthOrHeight / props.grid < MAX_CELLSIZE) ? widthOrHeight / props.grid : MAX_CELLSIZE);
-  }, [props.grid, cellSize]);
-
-  useEffect(() => {
-    editorSettingsStore.sceneSize = {
-      width: sceneSize.width,
-      height: sceneSize.height
-    }
-
-    editorSettingsStore.maxScale = MAX_CELLSIZE / cellSize;
-    editorSettingsStore.setPosition({x: editorRef.current.clientWidth / 2, y: editorRef.current.clientHeight / 2});
-    editorSettingsStore.containerSize = cellSize * props.grid;
-
-  }, [cellSize, sceneSize, props.grid]);
-
   return (
-    <EditorStyled 
-      ref={editorRef}
-    >
+    <EditorStyled>
       <Stage 
-        width={sceneSize.width} 
-        height={sceneSize.height}
+        width={editorSettingsStore.sceneSize.width} 
+        height={editorSettingsStore.sceneSize.height}
         options={{backgroundColor: 0xe5e5e5}}
       >
         <Container 
             interactive={true}
-            pivot={cellSize * props.grid / 2}
+            pivot={editorSettingsStore.pivot}
             position={[editorSettingsStore.position.x, editorSettingsStore.position.y]}
             scale={editorSettingsStore.scale}
           >
-            {gridCoordinates(props.grid, cellSize).map((item, index) => (
+            {editorSettingsStore.coordinatesRects.map((item, index) => (
               <Rect 
                 key={index}
                 index={index}
                 x={item.x}
                 y={item.y}
-                cellSize={cellSize}
+                cellSize={editorSettingsStore.cellSize}
                 isFilling={props.rects && getFilling(index, [...props.rects])}
                 fill={props.rects && getColorRect(index, [...props.rects])}
                 indexColor={(props.rects && props.isColoring) ? getColorIndex(index, [...props.rects]) : undefined}

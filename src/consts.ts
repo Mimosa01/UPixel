@@ -1,1 +1,0 @@
-export const MAX_CELLSIZE = 45;

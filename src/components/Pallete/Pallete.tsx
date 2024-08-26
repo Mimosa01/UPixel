@@ -18,7 +18,7 @@ const handleClearColor = () => {
 export const Pallete: FC<PropsPallete> = memo((props) => {
 
   return (
-    <PalleteStyled>
+    <PalleteStyled id="pallete">
       <ul>
         <PalleteColorButton onClick={() => handleClearColor()}/>
         {props.colors.map((item, index) => (

@@ -14,7 +14,6 @@ interface PropsFetch {
 }
 
 export const FetchEditorPage: FC<PropsFetch> = ({ state }) => {
-
   let editor: ReactNode;
   let pallete: ReactNode = <Pallete colors={mockPallete}/>;
 

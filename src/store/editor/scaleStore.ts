@@ -29,22 +29,26 @@ class ScaleStore {
     
     if (!isCanvas(event.target)) return;
 
-    const scaleStep = 0.15;
+    const scaleStep = 0.20;
     let scaleDelta: number = 0;
 
-    if (event.deltaY < 0 && editorSettingsStore.scale > 1) {
+    if ((event.deltaY < 0 && editorSettingsStore.scale > 1)) {
       scaleDelta = -scaleStep
-    } 
-    else if (event.deltaY > 0 && editorSettingsStore.scale < editorSettingsStore.maxScale) {
+    }
+
+    if (event.deltaY > 0 && editorSettingsStore.scale < editorSettingsStore.maxScale) {
       scaleDelta = scaleStep
     }
 
     const nextScale: number = editorSettingsStore.scale + scaleDelta;
-
-    this.offsetScale(editorSettingsStore.scale, nextScale, {x: event.clientX, y: event.clientY});
     
-    editorSettingsStore.scale = Number(nextScale.toFixed(2));
-    editorSettingsStore.normalizeContainerPosition();
+    if (Number(nextScale.toFixed(2)) !== editorSettingsStore.scale) {
+
+      this.offsetScale(editorSettingsStore.scale, nextScale, {x: event.clientX, y: event.clientY});
+      editorSettingsStore.scale = Number(nextScale.toFixed(2));
+      editorSettingsStore.normalizeContainerPosition();
+      
+    }
   }
 
   @action onTouchStart(event: TouchEvent): void {
@@ -87,10 +91,13 @@ class ScaleStore {
 
       const nextScale = editorSettingsStore.scale + scaleDelta;
 
-      this.offsetScale(editorSettingsStore.scale, nextScale, {x: centerTouches.x, y: centerTouches.y});
+      if (Number(nextScale.toFixed(2)) !== editorSettingsStore.scale) {
+        this.offsetScale(editorSettingsStore.scale, nextScale, {x: centerTouches.x, y: centerTouches.y});
+        editorSettingsStore.scale = Number(nextScale.toFixed(2));
+      }
 
-      editorSettingsStore.scale = nextScale;
       this._initialDiffFingers = currentDiffFingers;
+
     }
   }
 

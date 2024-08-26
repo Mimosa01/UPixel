@@ -1,6 +1,9 @@
 import { action, makeAutoObservable, observable } from "mobx";
 import { Point } from "./types";
 import { Size } from "./types";
+import { gridCoordinates } from "../../utils/grid";
+
+const MAX_CELLSIZE = 45;
 
 class EditorSettingStore {
   
@@ -9,6 +12,9 @@ class EditorSettingStore {
 
   sceneSize: Size = {width: 0, height: 0};
   containerSize: number = 0;
+  cellSize: number = 0;
+  pivot: number = 0;
+  coordinatesRects: Point[] = [];
 
   maxScale: number = 1;
 
@@ -18,6 +24,25 @@ class EditorSettingStore {
 
   @action setPosition(point: Point): void {
     this.position = point;
+  }
+
+  @action startSettings(grid: number): void {
+    const widthOrHeight = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+    const palleteHeight: HTMLElement = document.getElementById('pallete')!;
+    
+    this.sceneSize = {
+      width: window.innerWidth,
+      height: window.innerHeight - palleteHeight.clientHeight
+    };
+    this.cellSize = widthOrHeight / grid < MAX_CELLSIZE ? widthOrHeight / grid : MAX_CELLSIZE;
+    this.maxScale = MAX_CELLSIZE / this.cellSize;
+    this.containerSize = this.cellSize * grid;
+    this.pivot = this.cellSize * grid / 2;
+    this.coordinatesRects = gridCoordinates(grid, this.cellSize);
+    this.position = {
+      x: this.sceneSize.width / 2,
+      y: this.sceneSize.height / 2
+    };
   }
 
   //  что поменять на action
