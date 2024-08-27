@@ -90,6 +90,7 @@ class EditorSettingStore {
       y: newPosY
     })
   }
+
 }
 
 export default new EditorSettingStore();

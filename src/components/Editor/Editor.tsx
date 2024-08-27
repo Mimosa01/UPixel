@@ -57,14 +57,19 @@ const handleColoring = ({
   }
 }
 
-document.addEventListener('touchstart', (event) => scaleStore.onTouchStart(event));
-document.addEventListener('touchmove', (event) => scaleStore.onTouchMove(event));
-document.addEventListener('touchend', () => scaleStore.onTouchEnd());
 document.addEventListener('wheel', (event) => scaleStore.wheelScale(event));
+
+document.addEventListener('touchstart', (event) => scaleStore.onScaleTouchStart(event));
+document.addEventListener('touchmove', (event) => scaleStore.onScaleTouchMove(event));
+document.addEventListener('touchend', () => scaleStore.onScaleTouchEnd());
 
 document.addEventListener('touchstart', (event) => movingStore.onMoveTouchStart(event));
 document.addEventListener('touchmove', (event) => movingStore.onMoveTouch(event));
 document.addEventListener('touchend', () => movingStore.onMoveTouchEnd());
+
+document.addEventListener('pointerdown', (event) => movingStore.onMovePointerStart(event));
+document.addEventListener('pointermove', (event) => movingStore.onMovePointer(event));
+document.addEventListener('pointerup', () => movingStore.onMovePointerEnd());
 
 type PropsEditor = {
   grid: number;

@@ -51,7 +51,7 @@ class ScaleStore {
     }
   }
 
-  @action onTouchStart(event: TouchEvent): void {
+  @action onScaleTouchStart(event: TouchEvent): void {
     if (!isCanvas(event.target)) return;
     
     if (event.touches.length === 2) {
@@ -64,44 +64,47 @@ class ScaleStore {
     }
   }
 
-  @action onTouchMove(event: TouchEvent): void {
-    if (this._isScale) {
-      const scaleStep = 0.05;
-      let scaleDelta: number = 0;
-
-      const currentDiffFingers = Math.hypot(
-        (event.touches[1].clientX - event.touches[0].clientX),
-        (event.touches[1].clientY - event.touches[0].clientY),
-      );
-
-      const centerTouches: Point = {
-        x: (event.touches[0].clientX + event.touches[1].clientX) / 2,
-        y: (event.touches[0].clientY + event.touches[1].clientY) / 2
-      }
-
-      if (this._initialDiffFingers < currentDiffFingers && editorSettingsStore.scale < editorSettingsStore.maxScale) {
-        scaleDelta = scaleStep
-      }
-      else if (this._initialDiffFingers > currentDiffFingers && editorSettingsStore.scale > 1) {
-        scaleDelta = -scaleStep
-      } 
-      else {
-        return;
-      }
-
-      const nextScale = editorSettingsStore.scale + scaleDelta;
-
-      if (Number(nextScale.toFixed(2)) !== editorSettingsStore.scale) {
-        this.offsetScale(editorSettingsStore.scale, nextScale, {x: centerTouches.x, y: centerTouches.y});
-        editorSettingsStore.scale = Number(nextScale.toFixed(2));
-      }
-
-      this._initialDiffFingers = currentDiffFingers;
-
-    }
+  public preScale(initialDiff: number): void {
+    this._initialDiffFingers = initialDiff;
   }
 
-  @action onTouchEnd(): void {
+  @action onScaleTouchMove(event: TouchEvent): void {
+    if (!this._isScale) return;
+
+    const scaleStep = 0.05;
+    let scaleDelta: number = 0;
+
+    const currentDiffFingers = Math.hypot(
+      (event.touches[1].clientX - event.touches[0].clientX),
+      (event.touches[1].clientY - event.touches[0].clientY),
+    );
+
+    const centerTouches: Point = {
+      x: (event.touches[0].clientX + event.touches[1].clientX) / 2,
+      y: (event.touches[0].clientY + event.touches[1].clientY) / 2
+    }
+
+    if (this._initialDiffFingers < currentDiffFingers && editorSettingsStore.scale < editorSettingsStore.maxScale) {
+      scaleDelta = scaleStep
+    }
+    else if (this._initialDiffFingers > currentDiffFingers && editorSettingsStore.scale > 1) {
+      scaleDelta = -scaleStep
+    } 
+    else {
+      return;
+    }
+
+    const nextScale = editorSettingsStore.scale + scaleDelta;
+
+    if (Number(nextScale.toFixed(2)) !== editorSettingsStore.scale) {
+      this.offsetScale(editorSettingsStore.scale, nextScale, {x: centerTouches.x, y: centerTouches.y});
+      editorSettingsStore.scale = Number(nextScale.toFixed(2));
+    }
+
+    this._initialDiffFingers = currentDiffFingers;
+  }
+
+  @action onScaleTouchEnd(): void {
     this._isScale = false;
     editorSettingsStore.normalizeContainerPosition();
   }
