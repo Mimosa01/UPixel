@@ -51,7 +51,7 @@ class ScaleStore {
     }
   }
 
-  @action onScaleTouchStart(event: TouchEvent): void {
+  @action onScaleStart(event: TouchEvent): void {
     if (!isCanvas(event.target)) return;
     
     if (event.touches.length === 2) {
@@ -64,11 +64,7 @@ class ScaleStore {
     }
   }
 
-  public preScale(initialDiff: number): void {
-    this._initialDiffFingers = initialDiff;
-  }
-
-  @action onScaleTouchMove(event: TouchEvent): void {
+  @action onScaleMove(event: TouchEvent): void {
     if (!this._isScale) return;
 
     const scaleStep = 0.05;
@@ -104,7 +100,7 @@ class ScaleStore {
     this._initialDiffFingers = currentDiffFingers;
   }
 
-  @action onScaleTouchEnd(): void {
+  @action onScaleEnd(): void {
     this._isScale = false;
     editorSettingsStore.normalizeContainerPosition();
   }

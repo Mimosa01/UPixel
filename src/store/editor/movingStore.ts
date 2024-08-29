@@ -10,61 +10,63 @@ class MovingStore {
     makeAutoObservable(this);
   }
 
-  private getCurrentPoint(event: TouchEvent): Point {
-    if (event.touches.length == 2) {
-      const x_1 = event.touches[0].clientX;
-      const x_2 = event.touches[1].clientX;
+  // private getCurrentPoint(event: TouchEvent): Point {
+  //   if (event.touches.length == 2) {
+  //     const x_1 = event.touches[0].clientX;
+  //     const x_2 = event.touches[1].clientX;
 
-      const y_1 = event.touches[0].clientY;
-      const y_2 = event.touches[1].clientY
+  //     const y_1 = event.touches[0].clientY;
+  //     const y_2 = event.touches[1].clientY
 
-      return {
-        x: (x_1 + x_2) / 2 + (x_1 < x_2 ? x_1 : x_2),
-        y: (y_1 + y_2) / 2 + (y_1 < y_2 ? y_1 : y_2)
-      }
-    } 
+  //     return {
+  //       x: (x_1 + x_2) / 2 + (x_1 < x_2 ? x_1 : x_2),
+  //       y: (y_1 + y_2) / 2 + (y_1 < y_2 ? y_1 : y_2)
+  //     }
+  //   } 
 
-    return {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY
-    }
-  }
+  //   return {
+  //     x: event.touches[0].clientX,
+  //     y: event.touches[0].clientY
+  //   }
+  // }
   
-  @action onMoveTouchStart(event: TouchEvent): void {
-    if (event.touches.length > 2) return
+  // @action onMoveTouchStart(event: TouchEvent): void {
+  //   if (event.touches.length > 1) return
 
-    this._initialPoint = this.getCurrentPoint(event);
-  }
+  //   this._initialPoint = this.getCurrentPoint(event);
+  // }
 
-  @action onMoveTouch(event: TouchEvent): void {
-    const currentPoint = this.getCurrentPoint(event);
+  // @action onMoveTouch(event: TouchEvent): void {
+  //   if (!this._isMove) return;
 
-    const minDistance = Math.hypot(
-      this._initialPoint.x - currentPoint.x,
-      this._initialPoint.y - currentPoint.y
-    )
+  //   const currentPoint = this.getCurrentPoint(event);
 
-    editorSettingsStore.setPosition({
-      x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
-      y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
-    })
+  //   const minDistance = Math.hypot(
+  //     this._initialPoint.x - currentPoint.x,
+  //     this._initialPoint.y - currentPoint.y
+  //   )
 
-    this._initialPoint = currentPoint
+  //   editorSettingsStore.setPosition({
+  //     x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
+  //     y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
+  //   })
 
-    if (minDistance > 15) {
-      editorSettingsStore.setPosition({
-        x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
-        y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
-      })
+  //   this._initialPoint = currentPoint
+
+  //   if (minDistance > 15) {
+  //     editorSettingsStore.setPosition({
+  //       x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
+  //       y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
+  //     })
   
-      this._initialPoint = currentPoint
-    }
-  }
+  //     this._initialPoint = currentPoint
+  //   }
+  // }
 
-  @action onMoveTouchEnd(): void {
-    this._isMove = false;
-    editorSettingsStore.normalizeContainerPosition();
-  }
+  // @action onMoveTouchEnd(): void {
+  //   this._isMove = false;
+  //   editorSettingsStore.normalizeContainerPosition();
+  // }
 
   @action onMovePointerStart(event: PointerEvent): void {
     this._isMove = true;

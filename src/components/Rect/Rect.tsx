@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js';
 import { Graphics, Text } from "@pixi/react";
 import { FC, memo, useCallback, useState } from "react"
 import { HandleColoringType, HandleFillingType } from '../../types/handlersTypes';
+import { observer } from 'mobx-react';
+// import coloringStore from '../../store/coloringStore';
 
 
 interface PropsRect {
@@ -22,7 +24,7 @@ interface PropsTextInRect {
   y: number;
 }
 
-export const Rect: FC<PropsRect> = memo((props) => {
+export const Rect: FC<PropsRect> = observer((props) => {
   const initialFill = '#fff';
   const [fill, setFill] = useState<string>(
     (props.fill && (!props.indexColor || props.isFilling)) ? 
@@ -57,13 +59,17 @@ export const Rect: FC<PropsRect> = memo((props) => {
     g.endFill();
   }, [props, fill]);
 
+  // const foundRect = coloringStore.data.rects.find(rect => rect.indexRect === props.index);
+  // console.log(foundRect)
+
   return (
     <>
       <Graphics 
         draw={draw}
         interactive={true}
         alpha={alpha}
-        onpointerdown={handler}
+        ontap={handler}
+        onclick={handler}
       />
       {((props.indexColor && fill === initialFill) || (props.indexColor && alpha < 1)) &&
         <TextInRect

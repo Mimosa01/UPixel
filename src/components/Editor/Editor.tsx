@@ -10,8 +10,6 @@ import coloringStore from "../../store/coloringStore";
 import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
 import { observer } from "mobx-react";
 import editorSettingsStore from "../../store/editor/editorSettingsStore";
-import scaleStore from "../../store/editor/scaleStore";
-import movingStore from "../../store/editor/movingStore";
 
 const handleClickFilling = ({
   setFill, 
@@ -29,6 +27,9 @@ const handleClickFilling = ({
     coloringStore.addRect({index: indexRect, color: colorStore.selectedColor});
   
   }
+
+  // const foundRect = coloringStore.data.rects.find(rect => rect.indexRect === indexRect);
+  // console.log(foundRect)
 }
 
 const handleColoring = ({
@@ -56,20 +57,6 @@ const handleColoring = ({
     coloringStore.addRect({index: indexRect, color: colorStore.selectedColor, isColoring: true});
   }
 }
-
-document.addEventListener('wheel', (event) => scaleStore.wheelScale(event));
-
-document.addEventListener('touchstart', (event) => scaleStore.onScaleTouchStart(event));
-document.addEventListener('touchmove', (event) => scaleStore.onScaleTouchMove(event));
-document.addEventListener('touchend', () => scaleStore.onScaleTouchEnd());
-
-document.addEventListener('touchstart', (event) => movingStore.onMoveTouchStart(event));
-document.addEventListener('touchmove', (event) => movingStore.onMoveTouch(event));
-document.addEventListener('touchend', () => movingStore.onMoveTouchEnd());
-
-document.addEventListener('pointerdown', (event) => movingStore.onMovePointerStart(event));
-document.addEventListener('pointermove', (event) => movingStore.onMovePointer(event));
-document.addEventListener('pointerup', () => movingStore.onMovePointerEnd());
 
 type PropsEditor = {
   grid: number;

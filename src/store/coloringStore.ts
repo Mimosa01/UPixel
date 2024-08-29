@@ -1,4 +1,4 @@
-import { action, observable } from "mobx";
+import { action, makeAutoObservable, observable } from "mobx";
 import { ColoringType } from "../types/coloringType";
 
 type AddRectType = {
@@ -15,6 +15,10 @@ class ColoringStore {
     isColoring: undefined
   }
 
+  constructor() {
+    makeAutoObservable(this);
+  }
+
   @action setColoring(data: ColoringType): void {
     this.data = data;
   }
@@ -28,16 +32,17 @@ class ColoringStore {
     }
   }
 
-  @action createCanvas(): void {
+  // Это что касаемо сохранения
+  @action createCanvas(gridAmount: number): void {
     this.clearStore();
 
     this.data = {
-      grid: 5,
+      grid: gridAmount,
       rects: [],
       pallete: []
     }
 
-    console.log(this.data)
+    // console.log(this.data)
   }
 
   @action addRect({index, color, isColoring}: AddRectType): void {
@@ -54,20 +59,23 @@ class ColoringStore {
       this.data.rects.push({indexRect: index, color: color, indexColor: indexColor && indexColor});
     }
 
-    console.log(this.data)
+    // console.log(this.data)
   }
 
   @action clearRect(index: number): void {
     const foundIndex = this.data.rects.findIndex(rect => rect.indexRect === index);
 
     this.data.rects.splice(foundIndex, 1);
-    console.log(this.data)
+    // console.log(this.data)
   }
 
   @action saveCanvas(): void {
     // Тут по идеи должно происходить сохранение либо в LocalStorage либо на сервер
     console.log(this.data);
   }
+
+  // закончили работать с сохранением
+   
 }
 
 export default new ColoringStore();

@@ -19,7 +19,7 @@ export const FetchEditorPage: FC<PropsFetch> = ({ state }) => {
 
   switch (state) {
     case StateFetch.NEW_EDIT:
-      coloringStore.createCanvas();
+      coloringStore.createCanvas(30);
 
       editor = <Editor grid={30}/>
       break;
