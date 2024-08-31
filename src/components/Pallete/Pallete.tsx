@@ -16,6 +16,7 @@ const handleClearColor = () => {
 }
 
 export const Pallete: FC<PropsPallete> = memo((props) => {
+  colorStore.setSelectedColor(props.colors[0]);
 
   return (
     <PalleteStyled id="pallete">

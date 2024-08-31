@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
 import { Graphics, Text } from "@pixi/react";
 import { FC, memo, useCallback, useState } from "react"
-import { HandleColoringType, HandleFillingType } from '../../types/handlersTypes';
 import { observer } from 'mobx-react';
-// import coloringStore from '../../store/coloringStore';
+import { getGrayColor } from '../../utils/intensityGrey';
+import coloringStore from '../../store/coloringStore';
 
 
 interface PropsRect {
@@ -14,8 +14,6 @@ interface PropsRect {
   indexColor?: number;
   fill?: string;
   isFilling?: boolean;
-  handleFilling?: (props: HandleFillingType) => void;
-  handleColoring?: (props: HandleColoringType) => void;
 }
 
 interface PropsTextInRect {
@@ -25,7 +23,8 @@ interface PropsTextInRect {
 }
 
 export const Rect: FC<PropsRect> = observer((props) => {
-  const initialFill = '#fff';
+  const initialFill = (props.indexColor) ? getGrayColor(props.indexColor) : '#fff';
+  
   const [fill, setFill] = useState<string>(
     (props.fill && (!props.indexColor || props.isFilling)) ? 
     props.fill : 
@@ -33,23 +32,15 @@ export const Rect: FC<PropsRect> = observer((props) => {
   );
   const [alpha, setAlpha] = useState<number>((props.isFilling && !props.indexColor) ? 0.5 : 1);
 
-  const handler = () => {
-    if (props.handleFilling) {
-      return props.handleFilling({
-        setFill: setFill, 
-        initialFill: initialFill, 
-        indexRect: props.index
-      });
-    } else if (props.handleColoring) {
-      return props.handleColoring({
-        setFill: setFill, 
-        setAlpha: setAlpha, 
-        initialFill: initialFill, 
-        someFill: props.fill ? props.fill : initialFill,
-        indexRect: props.index
-      });
-    }
-  }
+  const handleFilling = useCallback(() => {
+    const color = coloringStore.handleFilling(props.index);
+    setFill(color ? color : initialFill);
+  }, [props.index, initialFill])
+
+  const handleColoring = useCallback(() => {
+    const color = coloringStore.handleColoring(props.index, setAlpha);
+    setFill(color ? color : initialFill);
+  }, [props.index, initialFill])
   
   const draw = useCallback((g: PIXI.Graphics) => {
     g.clear();
@@ -59,17 +50,14 @@ export const Rect: FC<PropsRect> = observer((props) => {
     g.endFill();
   }, [props, fill]);
 
-  // const foundRect = coloringStore.data.rects.find(rect => rect.indexRect === props.index);
-  // console.log(foundRect)
-
   return (
     <>
       <Graphics 
         draw={draw}
         interactive={true}
         alpha={alpha}
-        ontap={handler}
-        onclick={handler}
+        ontap={coloringStore.data.isColoring ? handleColoring : handleFilling}
+        onclick={coloringStore.data.isColoring ? handleColoring : handleFilling}
       />
       {((props.indexColor && fill === initialFill) || (props.indexColor && alpha < 1)) &&
         <TextInRect

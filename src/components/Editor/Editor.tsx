@@ -3,64 +3,15 @@ import { EditorStyled } from "../../styles/editorPage"
 import { FC, useEffect } from "react"
 import { useMediaQuery } from "react-responsive";
 import { Rect } from "../Rect/Rect";
-import colorStore from "../../store/colorStore";
-import { ColorForColoringType } from "../../types/coloringType";
-import { HandleColoringType, HandleFillingType } from "../../types/handlersTypes";
-import coloringStore from "../../store/coloringStore";
-import { getFilling, getColorRect, getColorIndex } from "../../utils/getRectProps";
 import { observer } from "mobx-react";
 import editorSettingsStore from "../../store/editor/editorSettingsStore";
+import coloringStore from "../../store/coloringStore";
+import { RectType } from "../../types/coloringType";
 
-const handleClickFilling = ({
-  setFill, 
-  initialFill,
-  indexRect
-}: HandleFillingType) => {
-  if (colorStore.isClear) {
-    
-    setFill(initialFill);
-    coloringStore.clearRect(indexRect);
-
-  } else if (colorStore.selectedColor !== '') {
-    
-    setFill(colorStore.selectedColor);
-    coloringStore.addRect({index: indexRect, color: colorStore.selectedColor});
-  
-  }
-
-  // const foundRect = coloringStore.data.rects.find(rect => rect.indexRect === indexRect);
-  // console.log(foundRect)
-}
-
-const handleColoring = ({
-  setFill,
-  setAlpha,
-  initialFill,
-  someFill,
-  indexRect
-}: HandleColoringType) => {
-  if (colorStore.isClear) {
-    
-    setFill(initialFill);
-    setAlpha(1);
-    coloringStore.clearRect(indexRect);
-
-  } else if (colorStore.selectedColor !== '') {
-    
-    if (colorStore.selectedColor !== someFill) {
-      setAlpha(0.5);
-    } else {
-      setAlpha(1);
-    }
-    
-    setFill(colorStore.selectedColor);
-    coloringStore.addRect({index: indexRect, color: colorStore.selectedColor, isColoring: true});
-  }
-}
 
 type PropsEditor = {
   grid: number;
-  rects?: ColorForColoringType[];
+  rects?: RectType[];
   isColoring?: boolean;
 }
 
@@ -92,11 +43,9 @@ export const Editor: FC<PropsEditor> = observer((props) => {
                 x={item.x}
                 y={item.y}
                 cellSize={editorSettingsStore.cellSize}
-                isFilling={props.rects && getFilling(index, [...props.rects])}
-                fill={props.rects && getColorRect(index, [...props.rects])}
-                indexColor={(props.rects && props.isColoring) ? getColorIndex(index, [...props.rects]) : undefined}
-                handleFilling={!props.isColoring ? handleClickFilling : undefined}
-                handleColoring={props.isColoring ? handleColoring : undefined}
+                isFilling={props.rects && coloringStore.getFilling(index)}
+                fill={props.rects && coloringStore.getColorRect(index)}
+                indexColor={(props.rects && props.isColoring) ? coloringStore.getColorIndex(index) : undefined}
               />
             ))}
           </Container>

@@ -1,5 +1,6 @@
 import { action, makeAutoObservable, observable } from "mobx";
 import { ColoringType } from "../types/coloringType";
+import colorStore from "./colorStore";
 
 type AddRectType = {
   index: number;
@@ -12,7 +13,7 @@ class ColoringStore {
     grid: 0,
     rects: [],
     pallete: [],
-    isColoring: undefined
+    isColoring: false
   }
 
   constructor() {
@@ -28,7 +29,7 @@ class ColoringStore {
       grid: 0,
       rects: [],
       pallete: [],
-      isColoring: undefined
+      isColoring: false
     }
   }
 
@@ -37,12 +38,13 @@ class ColoringStore {
     this.clearStore();
 
     this.data = {
+      isColoring: false,
       grid: gridAmount,
       rects: [],
       pallete: []
     }
 
-    // console.log(this.data)
+    console.log(this.data)
   }
 
   @action addRect({index, color, isColoring}: AddRectType): void {
@@ -56,7 +58,7 @@ class ColoringStore {
     if (foundIndex !== -1) {
       this.data.rects[foundIndex].color = color;
     } else {
-      this.data.rects.push({indexRect: index, color: color, indexColor: indexColor && indexColor});
+      this.data.rects.push({indexRect: index, color: color, indexColor: isColoring ? indexColor : undefined, isFilling: true});
     }
 
     // console.log(this.data)
@@ -65,8 +67,11 @@ class ColoringStore {
   @action clearRect(index: number): void {
     const foundIndex = this.data.rects.findIndex(rect => rect.indexRect === index);
 
-    this.data.rects.splice(foundIndex, 1);
-    // console.log(this.data)
+    if (foundIndex !== -1) {
+      this.data.rects.splice(foundIndex, 1);
+    }
+
+    console.log(this.data)
   }
 
   @action saveCanvas(): void {
@@ -75,6 +80,49 @@ class ColoringStore {
   }
 
   // закончили работать с сохранением
+
+  public getColorRect(index: number): string | undefined {
+    return this.data.rects[index].indexColor ? 
+      this.data.pallete[this.data.rects[index].indexColor] :
+      undefined;
+  }
+
+  public getColorIndex(index: number): number | undefined {
+    return this.data.rects[index].indexColor;
+  } 
+
+  public getFilling(index: number): boolean | undefined {
+    return this.data.rects[index].isFilling; // не может прочитать isFilling
+  }
+
+  @action handleFilling(index: number): string | undefined {
+    if (colorStore.isClear) {
+      this.clearRect(index);
+      return;
+    }
+
+    this.addRect({index: index, color: colorStore.selectedColor});
+
+    return colorStore.selectedColor;
+  }
+
+  @action handleColoring(index: number, setAlfa: React.Dispatch<React.SetStateAction<number>>): string | undefined {
+    if (colorStore.isClear) {
+      this.clearRect(index);
+      return
+    }
+
+    const selectedColorIndex = this.data.pallete.findIndex(color => color === colorStore.selectedColor);
+
+    if (selectedColorIndex !== this.data.rects[index].indexColor) {
+      setAlfa(0.5);
+    } else {
+      setAlfa(1);
+    }
+
+    this.addRect({index: index, color: colorStore.selectedColor});
+    return colorStore.selectedColor;
+  }
    
 }
 

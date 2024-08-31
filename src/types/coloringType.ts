@@ -1,13 +1,13 @@
-export type ColorForColoringType = {
-  color: string;
+export type RectType = {
+  color?: string;
   indexRect: number;
   indexColor?: number;
-  filling?: boolean;
+  isFilling: boolean;
 }
 
 export type ColoringType = {
   grid: number;
-  rects: ColorForColoringType[];
-  pallete?: string[];
-  isColoring?: boolean;
+  rects: RectType[];
+  pallete: string[];
+  isColoring: boolean;
 }

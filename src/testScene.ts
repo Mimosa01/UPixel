@@ -1,25 +1,31 @@
 export const testCanvas = {
+  isColoring: false,
   grid: 5,
+  pallete: [
+    '#ff0000',
+    '#00ff00',
+    '#0000ff'
+  ],
   rects: [
     {
       indexRect: 0,
-      color: '#ff0000',
+      indexColor: 0
     },
     {
       indexRect: 6,
-      color: '#ff0000',
+      indexColor: 0
     },
     {
       indexRect: 12,
-      color: '#ff0000',
+      indexColor: 0
     },
     {
       indexRect: 18,
-      color: '#ff0000',
+      indexColor: 0
     },
     {
       indexRect: 24,
-      color: '#ff0000',
+      indexColor: 0
     },
   ]
 }
@@ -35,34 +41,28 @@ export const testColoring = {
     {
       indexRect: 0,
       indexColor: 0,
-      color: '#ff0000',
-      filling: true
+      isFilling: true
     },
     {
       indexRect: 6,
       indexColor: 1,
-      color: '#00ff00',
     },
     {
       indexRect: 12,
       indexColor: 1,
-      color: '#00ff00',
-      filling: true
+      isFilling: true
     },
     {
       indexRect: 13,
-      color: '#ff0000',
-      filling: true,
+      isFilling: true,
     },
     {
       indexRect: 18,
       indexColor: 0,
-      color: '#ff0000',
     },
     {
       indexRect: 24,
       indexColor: 0,
-      color: '#ff0000',
     },
   ]
 }
