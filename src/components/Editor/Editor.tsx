@@ -2,11 +2,12 @@ import { Container, Stage } from "@pixi/react"
 import { EditorStyled } from "../../styles/editorPage"
 import { FC, useEffect } from "react"
 import { useMediaQuery } from "react-responsive";
-import { Rect } from "../Rect/Rect";
 import { observer } from "mobx-react";
 import editorSettingsStore from "../../store/editor/editorSettingsStore";
-import coloringStore from "../../store/coloringStore";
 import { RectType } from "../../types/coloringType";
+import coloringStore from "../../store/coloringStore";
+import { RectFilling } from "../Rect/RectFilling";
+import { RectColoring } from "../Rect/RectColoring";
 
 
 type PropsEditor = {
@@ -37,15 +38,23 @@ export const Editor: FC<PropsEditor> = observer((props) => {
             scale={editorSettingsStore.scale}
           >
             {editorSettingsStore.coordinatesRects.map((item, index) => (
-              <Rect 
+              !coloringStore.data.isColoring ?
+              <RectFilling 
                 key={index}
                 index={index}
                 x={item.x}
                 y={item.y}
                 cellSize={editorSettingsStore.cellSize}
-                isFilling={props.rects && coloringStore.getFilling(index)}
                 fill={props.rects && coloringStore.getColorRect(index)}
-                indexColor={(props.rects && props.isColoring) ? coloringStore.getColorIndex(index) : undefined}
+              /> :
+              <RectColoring 
+                key={index}
+                index={index}
+                x={item.x}
+                y={item.y}
+                cellSize={editorSettingsStore.cellSize}
+                indexColor={coloringStore.getColorIndex(index)}
+                fill={coloringStore.getCurrentColor(index)}
               />
             ))}
           </Container>

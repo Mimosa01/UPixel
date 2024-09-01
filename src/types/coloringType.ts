@@ -1,8 +1,7 @@
 export type RectType = {
-  color?: string;
+  currentColorIndex?: number;
   indexRect: number;
   indexColor?: number;
-  isFilling: boolean;
 }
 
 export type ColoringType = {

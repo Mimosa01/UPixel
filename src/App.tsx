@@ -6,7 +6,7 @@ export const App = () => {
   return (
     <>
       <GlobalStyled />
-      <FetchEditorPage state={StateFetch.EDIT}/>
+      <FetchEditorPage state={StateFetch.NEW_EDIT}/>
     </>
   )
 }

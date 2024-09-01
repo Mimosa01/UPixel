@@ -41,7 +41,7 @@ export const testColoring = {
     {
       indexRect: 0,
       indexColor: 0,
-      isFilling: true
+      currentColorIndex: 0,
     },
     {
       indexRect: 6,
@@ -50,11 +50,10 @@ export const testColoring = {
     {
       indexRect: 12,
       indexColor: 1,
-      isFilling: true
     },
     {
       indexRect: 13,
-      isFilling: true,
+      currentColorIndex: 0,
     },
     {
       indexRect: 18,

@@ -2,12 +2,6 @@ import { action, makeAutoObservable, observable } from "mobx";
 import { ColoringType } from "../types/coloringType";
 import colorStore from "./colorStore";
 
-type AddRectType = {
-  index: number;
-  color: string;
-  isColoring?: boolean; 
-}
-
 class ColoringStore {
   @observable data: ColoringType = {
     grid: 0,
@@ -33,6 +27,10 @@ class ColoringStore {
     }
   }
 
+  @action setPallete(colors: string[]): void {
+    this.data.pallete = colors;
+  }
+
   // Это что касаемо сохранения
   @action createCanvas(gridAmount: number): void {
     this.clearStore();
@@ -47,27 +45,41 @@ class ColoringStore {
     console.log(this.data)
   }
 
-  @action addRect({index, color, isColoring}: AddRectType): void {
-    const foundIndex = this.data.rects.findIndex(rect => rect.indexRect === index);
-    let indexColor: number | undefined;
+  @action addRect(indexRect: number, color: string): void {
+    const foundRectIndex = this.data.rects.findIndex(rect => rect.indexRect === indexRect);
+    const currentColorIndex = this.data.pallete.findIndex(c => c === color);
 
-    if (isColoring) {
-      indexColor = this.data.pallete?.findIndex(color => color === color);
-    }
+    if (foundRectIndex !== -1) {
+      if (this.data.isColoring) {
+        this.data.rects[foundRectIndex].currentColorIndex = currentColorIndex;
+        return;
+      }
 
-    if (foundIndex !== -1) {
-      this.data.rects[foundIndex].color = color;
+      this.data.rects[foundRectIndex].indexColor = currentColorIndex;
     } else {
-      this.data.rects.push({indexRect: index, color: color, indexColor: isColoring ? indexColor : undefined, isFilling: true});
-    }
+      if (this.data.isColoring) {
+        this.data.rects.push({
+          indexRect: indexRect,
+          currentColorIndex: currentColorIndex,
+        });
+        return;
+      }
 
-    // console.log(this.data)
+      this.data.rects.push({
+        indexRect: indexRect,
+        indexColor: currentColorIndex
+      })
+    }
   }
 
   @action clearRect(index: number): void {
     const foundIndex = this.data.rects.findIndex(rect => rect.indexRect === index);
 
     if (foundIndex !== -1) {
+      if (this.data.isColoring && this.data.rects[foundIndex].indexColor !== undefined) {
+        this.data.rects[foundIndex].currentColorIndex = undefined;
+        return;
+      }
       this.data.rects.splice(foundIndex, 1);
     }
 
@@ -82,18 +94,36 @@ class ColoringStore {
   // закончили работать с сохранением
 
   public getColorRect(index: number): string | undefined {
-    return this.data.rects[index].indexColor ? 
-      this.data.pallete[this.data.rects[index].indexColor] :
+    const foundRect = this.data.rects.find(item => item.indexRect === index);
+    
+    return foundRect ? 
+      this.data.pallete[foundRect.indexColor!] :
+      undefined;
+  }
+
+  public getCurrentColorIndex(index: number): number | undefined {
+    const foundRect = this.data.rects.find(item => item.indexRect === index);
+    
+    return foundRect && foundRect.currentColorIndex !== undefined ? 
+      foundRect.currentColorIndex :
+      undefined;
+  }
+
+  public getCurrentColor(index: number): string | undefined {
+    const foundRect = this.data.rects.find(item => item.indexRect === index);
+    
+    return foundRect && foundRect.currentColorIndex !== undefined ? 
+      this.data.pallete[foundRect.currentColorIndex] :
       undefined;
   }
 
   public getColorIndex(index: number): number | undefined {
-    return this.data.rects[index].indexColor;
+    const foundRect = this.data.rects.find(item => item.indexRect === index);
+
+    return foundRect ? foundRect.indexColor : undefined;
   } 
 
-  public getFilling(index: number): boolean | undefined {
-    return this.data.rects[index].isFilling; // не может прочитать isFilling
-  }
+  // handlers
 
   @action handleFilling(index: number): string | undefined {
     if (colorStore.isClear) {
@@ -101,26 +131,8 @@ class ColoringStore {
       return;
     }
 
-    this.addRect({index: index, color: colorStore.selectedColor});
+    this.addRect(index, colorStore.selectedColor);
 
-    return colorStore.selectedColor;
-  }
-
-  @action handleColoring(index: number, setAlfa: React.Dispatch<React.SetStateAction<number>>): string | undefined {
-    if (colorStore.isClear) {
-      this.clearRect(index);
-      return
-    }
-
-    const selectedColorIndex = this.data.pallete.findIndex(color => color === colorStore.selectedColor);
-
-    if (selectedColorIndex !== this.data.rects[index].indexColor) {
-      setAlfa(0.5);
-    } else {
-      setAlfa(1);
-    }
-
-    this.addRect({index: index, color: colorStore.selectedColor});
     return colorStore.selectedColor;
   }
    
