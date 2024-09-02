@@ -5,7 +5,7 @@ import { useMediaQuery } from "react-responsive";
 import { observer } from "mobx-react";
 import editorSettingsStore from "../../store/editor/editorSettingsStore";
 import { RectType } from "../../types/coloringType";
-import coloringStore from "../../store/coloringStore";
+import coloringStore from "../../store/coloring/coloringStore";
 import { RectFilling } from "../Rect/RectFilling";
 import { RectColoring } from "../Rect/RectColoring";
 

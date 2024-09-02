@@ -2,8 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Graphics } from "@pixi/react";
 import { FC, useCallback, useMemo, useState } from "react"
 import { observer } from 'mobx-react';
-import coloringStore from '../../store/coloringStore';
-import handlerStore from '../../store/editor/handlerStore';
+import handlerStore from '../../store/handlerStore';
 
 
 interface PropsRect {
@@ -23,7 +22,7 @@ export const RectFilling: FC<PropsRect> = observer((props) => {
   const [fill, setFill] = useState<string>(props.fill ? props.fill : initialFill);
 
   const handleFilling = useCallback(() => {
-    const color = coloringStore.handleFilling(props.index);
+    const color = handlerStore.handleFilling(props.index);
     setFill(color ? color : initialFill);
   }, [props.index, initialFill]);
 
@@ -41,13 +40,13 @@ export const RectFilling: FC<PropsRect> = observer((props) => {
       interactive={true}
       eventMode='dynamic'
       ontap={(event) => {
-          if (!handlerStore.isMove) {
+          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
             event.stopPropagation()
             handleFilling()
           }
         }}
       onclick={(event) => {
-          if (!handlerStore.isMove) {
+          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
             event.stopPropagation()
             handleFilling()
           }
@@ -55,21 +54,3 @@ export const RectFilling: FC<PropsRect> = observer((props) => {
     />
   )
 })
-
-// const TextInRect: FC<PropsTextInRect> = memo((props) => {
-//   return (
-//     <Text 
-//       text={props.text}
-//       x={props.x}
-//       y={props.y}
-//       anchor={0.5}
-//       style={
-//         new PIXI.TextStyle({
-//           fill: '#333',
-//           fontSize: 18,
-//           fontFamily: 'pixel'
-//         })
-//       }
-//     />
-//   )  
-// })

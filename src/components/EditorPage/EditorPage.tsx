@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react"
 import { Button } from "../../styles/button"
 import { EditorPageStyled } from "../../styles/editorPage"
 import { ArrowIcon } from "../Icons/ArrowIcon"
-import coloringStore from "../../store/coloringStore";
+import coloringStore from "../../store/coloring/coloringStore";
 
 interface PropsEditorPage {
   editor: ReactNode;

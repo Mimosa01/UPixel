@@ -3,9 +3,10 @@ import { getColorings } from "../../api/colorings";
 import { testCanvas, testColoring } from "../../testScene";
 import { EditorPage } from "./EditorPage";
 import { Editor } from "../Editor/Editor";
-import coloringStore from "../../store/coloringStore";
+import coloringStore from "../../store/coloring/coloringStore";
 import { Pallete } from "../Pallete/Pallete";
 import { StateFetch } from "../../types/stateEditorPage";
+import saveColoringStore from "../../store/coloring/saveColoringStore";
 
 const mockPallete: string[] = ['#FF0000', '#00FF00', '#0000FF'];
 
@@ -19,7 +20,7 @@ export const FetchEditorPage: FC<PropsFetch> = ({ state }) => {
 
   switch (state) {
     case StateFetch.NEW_EDIT:
-      coloringStore.createCanvas(30);
+      saveColoringStore.createCanvas(30);
       coloringStore.setPallete(mockPallete);
 
       editor = <Editor grid={30}/>

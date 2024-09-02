@@ -1,10 +1,13 @@
-import { makeAutoObservable } from "mobx";
-import scaleStore from "./scaleStore";
-import movingStore from "./movingStore";
+import { action, makeAutoObservable } from "mobx";
+import scaleStore from "./editor/scaleStore";
+import movingStore from "./editor/movingStore";
+import colorStore from "./colorStore";
+import saveColoringStore from "./coloring/saveColoringStore";
 
 class HandlerStore {
   private _isMove: boolean = false;
   private _isScale: boolean = false;
+  private _isClick: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -28,6 +31,7 @@ class HandlerStore {
 
     document.addEventListener('touchstart', (event) => {
       if (event.touches.length > 1 && !this._isMove) {
+        this._isClick = false;
         event.preventDefault();
         this._isScale = true;
         scaleStore.onScaleStart(event);
@@ -54,6 +58,27 @@ class HandlerStore {
 
   public get isScale(): boolean {
     return this._isScale;
+  }
+
+  public get isClick(): boolean {
+    return this._isClick;
+  }
+
+  @action handleFilling(index: number): string | undefined {
+    this._isClick = false;
+    
+    if (colorStore.isClear) {
+      saveColoringStore.clearRect(index);
+
+      this._isClick = true;
+      return;
+    }
+
+    saveColoringStore.addRect(index, colorStore.selectedColor);
+
+    this._isClick = true;
+
+    return colorStore.selectedColor;
   }
 }
 

@@ -4,11 +4,11 @@ import { App } from './App.tsx'
 import './index.css'
 import { Provider } from 'mobx-react'
 import colorStore from './store/colorStore.ts'
-import coloringStore from './store/coloringStore.ts'
+import coloringStore from './store/coloring/coloringStore.ts'
 import editorSettingsStore from './store/editor/editorSettingsStore.ts'
 import scaleStore from './store/editor/scaleStore.ts'
 import movingStore from './store/editor/movingStore.ts'
-import handlerStore from './store/editor/handlerStore.ts'
+import handlerStore from './store/handlerStore.ts'
 
 const store = {
   colorStore,

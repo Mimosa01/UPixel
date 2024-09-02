@@ -2,10 +2,10 @@ import * as PIXI from 'pixi.js';
 import { observer } from "mobx-react";
 import { FC, useCallback, useMemo, useState } from "react";
 import { getGrayColor } from "../../utils/intensityGrey";
-import coloringStore from '../../store/coloringStore';
+import coloringStore from '../../store/coloring/coloringStore';
 import { Graphics } from '@pixi/react';
 import { TextInRect } from './TextInRect';
-import handlerStore from '../../store/editor/handlerStore';
+import handlerStore from '../../store/handlerStore';
 
 interface PropsRectColoring {
   x: number;
@@ -31,7 +31,7 @@ export const RectColoring: FC<PropsRectColoring> = observer((props) => {
   );
 
   const handleColoring = useCallback(() => {
-    const color = coloringStore.handleFilling(props.index);
+    const color = handlerStore.handleFilling(props.index);
     setFill(color ? color : initialFill);
 
     setAlpha(
@@ -57,13 +57,13 @@ export const RectColoring: FC<PropsRectColoring> = observer((props) => {
         interactive={true}
         alpha={alpha}
         ontap={(event) => {
-          if (!handlerStore.isMove) {
+          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
             event.stopPropagation();
             handleColoring()
           }
         }}
         onclick={(event) => {
-          if (!handlerStore.isMove) {
+          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
             event.stopPropagation();
             handleColoring()
           }
