@@ -39,18 +39,16 @@ export const RectFilling: FC<PropsRect> = observer((props) => {
       draw={draw}
       interactive={true}
       eventMode='dynamic'
-      ontap={(event) => {
-          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
-            event.stopPropagation()
-            handleFilling()
-          }
-        }}
-      onclick={(event) => {
-          if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
-            event.stopPropagation()
-            handleFilling()
-          }
-        }}
+      ontap={() => {
+        if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
+          handleFilling()
+        }
+      }}
+      onclick={() => { 
+        if (!handlerStore.isMove && !handlerStore.isScale && handlerStore.isClick) {
+          handleFilling()
+        }
+      }}
     />
   )
 })

@@ -3,7 +3,7 @@ export function gridCoordinates(rowCount: number, cellSize: number) {
 
   for (let i = 0; i < rowCount; i++) {
     for (let j = 0; j < rowCount; j++) {
-      coordinates.push({x: i * cellSize, y: j * cellSize})
+      coordinates.push({y: i * cellSize, x: j * cellSize})
     }
   }
 

@@ -33,14 +33,14 @@ class ScaleStore {
     let scaleDelta: number = 0;
 
     if ((event.deltaY < 0 && editorSettingsStore.scale > 1)) {
-      scaleDelta = -scaleStep
+      scaleDelta = -(editorSettingsStore.scale * scaleStep)
     }
 
     if (event.deltaY > 0 && editorSettingsStore.scale < editorSettingsStore.maxScale) {
-      scaleDelta = scaleStep
+      scaleDelta = editorSettingsStore.scale * scaleStep
     }
 
-    const nextScale: number = editorSettingsStore.scale + scaleDelta;
+    const nextScale: number = editorSettingsStore.scale + scaleDelta < 1 ? 1 : editorSettingsStore.scale + scaleDelta;
     
     if (Number(nextScale.toFixed(2)) !== editorSettingsStore.scale) {
 

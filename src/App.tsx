@@ -1,4 +1,4 @@
-import { FetchEditorPage } from "./components/EditorPage/FetchEditorPage"
+import { FetchEditorPage } from "./view/EditorPage/FetchEditorPage"
 import { GlobalStyled } from "./styles/global"
 import { StateFetch } from "./types/stateEditorPage"
 

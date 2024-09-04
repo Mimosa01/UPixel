@@ -1,6 +1,7 @@
 import { action, makeAutoObservable } from "mobx";
 import { Point } from "./types";
 import editorSettingsStore from "./editorSettingsStore";
+import handlerStore from "../handlerStore";
 
 class MovingStore {
   private _isMove: boolean = false;
@@ -9,64 +10,6 @@ class MovingStore {
   constructor() {
     makeAutoObservable(this);
   }
-
-  // private getCurrentPoint(event: TouchEvent): Point {
-  //   if (event.touches.length == 2) {
-  //     const x_1 = event.touches[0].clientX;
-  //     const x_2 = event.touches[1].clientX;
-
-  //     const y_1 = event.touches[0].clientY;
-  //     const y_2 = event.touches[1].clientY
-
-  //     return {
-  //       x: (x_1 + x_2) / 2 + (x_1 < x_2 ? x_1 : x_2),
-  //       y: (y_1 + y_2) / 2 + (y_1 < y_2 ? y_1 : y_2)
-  //     }
-  //   } 
-
-  //   return {
-  //     x: event.touches[0].clientX,
-  //     y: event.touches[0].clientY
-  //   }
-  // }
-  
-  // @action onMoveTouchStart(event: TouchEvent): void {
-  //   if (event.touches.length > 1) return
-
-  //   this._initialPoint = this.getCurrentPoint(event);
-  // }
-
-  // @action onMoveTouch(event: TouchEvent): void {
-  //   if (!this._isMove) return;
-
-  //   const currentPoint = this.getCurrentPoint(event);
-
-  //   const minDistance = Math.hypot(
-  //     this._initialPoint.x - currentPoint.x,
-  //     this._initialPoint.y - currentPoint.y
-  //   )
-
-  //   editorSettingsStore.setPosition({
-  //     x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
-  //     y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
-  //   })
-
-  //   this._initialPoint = currentPoint
-
-  //   if (minDistance > 15) {
-  //     editorSettingsStore.setPosition({
-  //       x: editorSettingsStore.position.x - (this._initialPoint.x - currentPoint.x),
-  //       y: editorSettingsStore.position.y - (this._initialPoint.y - currentPoint.y)
-  //     })
-  
-  //     this._initialPoint = currentPoint
-  //   }
-  // }
-
-  // @action onMoveTouchEnd(): void {
-  //   this._isMove = false;
-  //   editorSettingsStore.normalizeContainerPosition();
-  // }
 
   @action onMovePointerStart(event: PointerEvent): void {
     this._isMove = true;
@@ -85,6 +28,9 @@ class MovingStore {
     )
 
     if (minDistance > 15) {
+      handlerStore.isClick = false;
+      handlerStore.isMove = true;
+
       editorSettingsStore.setPosition({
         x: editorSettingsStore.position.x - (this._initialPoint.x - event.clientX),
         y: editorSettingsStore.position.y - (this._initialPoint.y - event.clientY)

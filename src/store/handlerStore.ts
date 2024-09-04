@@ -14,54 +14,37 @@ class HandlerStore {
 
     document.addEventListener('wheel', (event) => scaleStore.wheelScale(event));
 
-    document.addEventListener('pointerdown', (event) => movingStore.onMovePointerStart(event));
-    document.addEventListener('pointermove', (event) => {
-      if (!this._isScale) {
-        this._isMove = true;
-        event.preventDefault();
-        movingStore.onMovePointer(event);
-      }
-    });
-    document.addEventListener('pointerup', () => {
-      if (this._isMove) {
+    document.addEventListener('pointerdown', (event) => {   
+      movingStore.onMovePointerStart(event);
+
+      document.addEventListener('pointermove', this.moveHandler.bind(this), false);
+
+      document.addEventListener('pointerup', () => {
         movingStore.onMovePointerEnd();
         this._isMove = false;
-      }
+        this._isClick = true;
+
+        document.removeEventListener('pointermove', this.moveHandler.bind(this), false);
+      });
+
     });
 
     document.addEventListener('touchstart', (event) => {
       if (event.touches.length > 1 && !this._isMove) {
-        this._isClick = false;
-        event.preventDefault();
         this._isScale = true;
+        this._isClick = false;
         scaleStore.onScaleStart(event);
+
+        document.addEventListener('touchmove', (event) => {
+          scaleStore.onScaleMove(event)
+        });
+
+        document.addEventListener('touchend', () => {
+          scaleStore.onScaleEnd();
+          this._isScale = false;
+        });
       }
     });
-
-    document.addEventListener('touchmove', (event) => {
-      if (this._isScale) {
-        event.preventDefault();
-        scaleStore.onScaleMove(event)
-      }
-    });
-    document.addEventListener('touchend', () => {
-      if (this._isScale) {
-        scaleStore.onScaleEnd();
-        this._isScale = false;
-      }
-    });
-  }
-
-  public get isMove(): boolean {
-    return this._isMove;
-  }
-
-  public get isScale(): boolean {
-    return this._isScale;
-  }
-
-  public get isClick(): boolean {
-    return this._isClick;
   }
 
   @action handleFilling(index: number): string | undefined {
@@ -79,6 +62,32 @@ class HandlerStore {
     this._isClick = true;
 
     return colorStore.selectedColor;
+  }
+
+  private moveHandler(event: PointerEvent): void {
+    if (!this._isScale) {
+      movingStore.onMovePointer(event);
+    }
+  }
+
+  public get isMove(): boolean {
+    return this._isMove;
+  }
+
+  public set isMove(value: boolean) {
+    this._isMove = value;
+  }
+
+  public get isScale(): boolean {
+    return this._isScale;
+  }
+
+  public get isClick(): boolean {
+    return this._isClick;
+  }
+
+  public set isClick(value: boolean) {
+    this._isClick = value;
   }
 }
 
