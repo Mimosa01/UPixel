@@ -45,7 +45,6 @@ class EditorSettingStore {
     };
   }
 
-  //  что поменять на action
   public normalizeContainerPosition(): void {
     const minTreshold: Point = {x: 0, y: 0};
     const maxTreshold: Point = {x: this.sceneSize.width, y: this.sceneSize.height};

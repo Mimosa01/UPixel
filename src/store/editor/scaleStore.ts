@@ -47,7 +47,6 @@ class ScaleStore {
       this.offsetScale(editorSettingsStore.scale, nextScale, {x: event.clientX, y: event.clientY});
       editorSettingsStore.scale = Number(nextScale.toFixed(2));
       editorSettingsStore.normalizeContainerPosition();
-      
     }
   }
 
