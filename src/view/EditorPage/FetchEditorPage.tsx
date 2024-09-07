@@ -20,10 +20,10 @@ export const FetchEditorPage: FC<PropsFetch> = ({ state }) => {
 
   switch (state) {
     case StateFetch.NEW_EDIT:
-      saveColoringStore.createCanvas(100);
+      saveColoringStore.createCanvas(30);
       coloringStore.setPallete(mockPallete);
 
-      editor = <Editor grid={100}/>
+      editor = <Editor grid={30}/>
       break;
 
     case StateFetch.EDIT:

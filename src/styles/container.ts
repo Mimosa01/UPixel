@@ -6,3 +6,9 @@ export const Container = styled.div`
   max-width: 1440px;
   width: 100%;
 `
+
+export const FlexContainer = styled(Container)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`

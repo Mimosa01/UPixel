@@ -17,5 +17,5 @@ export default defineConfig({
         }
     }
   },
-  base: '/Upixel/'
+  // base: '/Upixel/'
 })
